@@ -9,7 +9,7 @@ public class Main {
     public static void main(String... args) throws InterruptedException {
         System.out.println("pid: " + ManagementFactory.getRuntimeMXBean().getName());
         System.out.println("Starting the loop");
-        MyClass calculator = new MyClass(200_000);
+        MyCalculator calculator = new MyCalculator(200_000);
 
         System.out.println("--- Размер пустых объектов (bytes) ---");
         System.out.println(String.class + " pool: " + calculator.getObjectSize(String::new));
@@ -31,41 +31,4 @@ public class Main {
         }
     }
 }
-
-
-
-    class MyClass {
-        private final Runtime runtime;
-        private final int size;
-        private final Object[] array;
-
-        MyClass (int size) {
-           runtime = Runtime.getRuntime();
-           this.size = size;
-           array = new Object[size];
-        }
-        private static long getMemorySize(Runtime runtime) {
-            return runtime.totalMemory() - runtime.freeMemory();
-        }
-        long getObjectSize(Supplier<Object> supplier) {
-
-            System.gc();
-            Object[] array = new Object[size];
-
-            long memBefore = getMemorySize(runtime);
-            for (int j = 0; j < size; j++) {
-                array[j] = supplier.get();
-            }
-            long memAfter  = getMemorySize(runtime);
-            clearArray();
-            System.gc();
-            return (memAfter - memBefore) / size;
-        }
-
-        private void clearArray() {
-            for (int i = 0; i < size; i++) {
-                array[i] = null;
-            }
-        }
-    }
 
