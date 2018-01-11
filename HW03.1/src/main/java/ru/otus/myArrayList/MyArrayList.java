@@ -1,4 +1,4 @@
-package ru.otus.myList;
+package ru.otus.myArrayList;
 
 import java.util.*;
 
@@ -24,12 +24,13 @@ public class MyArrayList<T> implements List<T> {
         //return false;
     }
 
-    public Iterator<T> iterator() {throw new RuntimeException("Needed!!! iterator()");
-       // return null;
+    public Iterator<T> iterator() {
+        ListIterator myListIterator = this.listIterator();
+        return myListIterator;
     }
 
     public Object[] toArray() {//throw new RuntimeException("Needed!!! Object[] toArray()");
-        return new Object[0];
+        return array.clone();
     }
 
     public <T1> T1[] toArray(T1[] a) {throw new RuntimeException("Needed!!! T1[] toArray(T1[] a)");
@@ -37,7 +38,7 @@ public class MyArrayList<T> implements List<T> {
     }
 
     public boolean add(T t) {
-       // return false;
+
         size++;
         T[] newArray = (T[])(new Object[size]);
         for(int i = 0; i < size - 1; i++) {
@@ -76,8 +77,7 @@ public class MyArrayList<T> implements List<T> {
 
     }
 
-    public T get(int index) {//throw new RuntimeException("Needed!!!T get(int index)");
-        return array[index];
+    public T get(int index) { return array[index];
       //  return null;
     }
 
@@ -101,17 +101,10 @@ public class MyArrayList<T> implements List<T> {
       //  return 0;
     }
 
-    public ListIterator<T> listIterator() {//throw new RuntimeException("Needed!!!ListIterator<T> listIterator()");
-        return new ListItr(0);
-       // return null;
+    public ListIterator<T> listIterator() {
+        return new MyArrayIterator(array);
     }
- /*   private void rangeCheckForAdd(int index) {
-        if (index > size || index < 0)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-    private String outOfBoundsMsg(int index) {
-        return "Index: "+index+", Size: "+size;
-    }*/
+
 
     public ListIterator<T> listIterator(int index) {throw new RuntimeException("Needed!!!ListIterator<T> listIterator(int index)");
       //  return null;
@@ -119,5 +112,79 @@ public class MyArrayList<T> implements List<T> {
 
     public List<T> subList(int fromIndex, int toIndex) {throw new RuntimeException("Needed!!!List<T> subList(int fromIndex, int toIndex)");
        // return null;
+    }
+
+    private class MyArrayIterator implements Iterator<T>, ListIterator<T> {
+
+        int current = -1;
+        List<T> list;
+
+        MyArrayIterator(T[] list) {
+            this.list = Arrays.asList(list);
+        }
+
+        MyArrayIterator(T[] list, int index) {
+            this.list = Arrays.asList(list);
+            this.current = index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return  current < list.size() - 1;
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                current++;
+                return list.get(current);
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return current > 0 && list.size() > 0;
+        }
+
+        @Override
+        public T previous() {
+            if (hasPrevious()) {
+                current--;
+                return list.get(current);
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public int nextIndex() {
+            if (hasNext()) {
+                return (current + 1);
+            }
+            else return -1;
+        }
+
+        @Override
+        public int previousIndex() {
+            if (hasPrevious()) {
+                return (current - 1);
+            }
+            else return -1;
+        }
+
+        @Override
+        public void remove() {
+            list.remove(current);
+        }
+
+        @Override
+        public void set(T t) {
+            list.set(current, t);
+        }
+
+        @Override
+        public void add(T t) {
+            list.add(t);
+        }
     }
 }
